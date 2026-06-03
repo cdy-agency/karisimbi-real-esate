@@ -7,6 +7,9 @@ import  WhatsAppButton from "@/src/components/WhatsAppButton/WhatsAppButton"
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
+
+
 const poppins = Poppins({
   variable: "--font-site",
   subsets: ["latin"],
