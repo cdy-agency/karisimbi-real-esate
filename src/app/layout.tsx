@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "Karisimbi Real Estate",
   description: "Karisimbi Real Estate - Your Dream Home Awaits",
   icons:{
-    icon: "/logo.jpeg",
+    icon: "/favicon.ico",
   }
 };
 
