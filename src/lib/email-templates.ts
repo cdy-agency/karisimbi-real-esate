@@ -52,6 +52,7 @@ function section(title: string, rows: string) {
     </div>`;
 }
 
+/* Wrapper WITH footer — used by sell property & book visit emails */
 function wrapper(preheader: string, content: string) {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -117,7 +118,7 @@ function wrapper(preheader: string, content: string) {
                   </td>
 
                   <td align="right">
-                    <a href="tel:+250788123456"
+                    <a href="tel:+250787861400"
                       style="color:${BASE.gold};font-size:12px;text-decoration:none;font-weight:600;">
                       +250 787 861 400
                     </a>
@@ -133,13 +134,72 @@ function wrapper(preheader: string, content: string) {
 
               <div style="margin-top:16px;padding-top:16px;
                 border-top:1px solid rgba(255,255,255,0.1);">
-
                 <p style="margin:0;font-size:11px;
                   color:rgba(255,255,255,0.3);text-align:center;">
                   This is an automated notification. Please do not reply to this email.
                 </p>
-
               </div>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>`;
+}
+
+/* Wrapper WITHOUT footer — used by reset password email only */
+function wrapperNoFooter(preheader: string, content: string) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Karisimbi Real Estate</title>
+</head>
+
+<body style="margin:0;padding:0;background:#F3F4F6;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+  <!-- Preheader -->
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${preheader}</div>
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F3F4F6;min-height:100vh;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+
+        <!-- Card -->
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:${BASE.brand};border-radius:16px 16px 0 0;padding:0;overflow:hidden;">
+              <div style="padding:32px 36px 28px;">
+                <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.15em;
+                  text-transform:uppercase;color:rgba(255,255,255,0.55);">
+                  Karisimbi Real Estate
+                </p>
+
+                <div style="width:40px;height:2px;background:${BASE.gold};
+                  margin-bottom:16px;border-radius:2px;"></div>
+              </div>
+
+              <!-- Gold accent -->
+              <div style="height:4px;background:linear-gradient(90deg,${BASE.gold},${BASE.brandLight},${BASE.gold});"></div>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="background:${BASE.white};padding:36px;
+              border-left:1px solid ${BASE.border};
+              border-right:1px solid ${BASE.border};
+              border-bottom:1px solid ${BASE.border};
+              border-radius:0 0 16px 16px;">
+              ${content}
             </td>
           </tr>
 
@@ -467,5 +527,87 @@ Transport: ${formatTransport(data.transportation) ?? "—"}
 
 ---
 Karisimbi Real Estate · info@karisimbirealestate.com · +250 787 861 400
+  `.trim();
+}
+
+/* ─────────────────────────────────────────────
+   RESET PASSWORD EMAIL
+   ───────────────────────────────────────────── */
+
+export function resetPasswordEmailHtml(
+  resetLink: string,
+  recipientEmail: string
+): string {
+  const content = `
+    <!-- Title -->
+    <div style="margin-bottom:28px;">
+      <div style="margin-bottom:12px;">
+        ${badge("Security Notice")}
+        &nbsp;
+        ${badge("Password Reset", "#0369a1")}
+      </div>
+
+      <h1 style="margin:0 0 6px;font-size:26px;font-weight:800;
+        color:${BASE.dark};letter-spacing:-0.02em;">
+        Reset Your Password
+      </h1>
+
+      <p style="margin:0;font-size:14px;color:${BASE.gray};line-height:1.6;">
+        We received a request to reset the password for your account.
+        Click the button below to choose a new password.
+      </p>
+    </div>
+
+    <!-- Divider -->
+    <div style="height:1px;
+      background:linear-gradient(90deg,${BASE.brand}33,transparent);
+      margin-bottom:28px;"></div>
+
+    <!-- Account info table -->
+    <div style="margin-bottom:28px;">
+      <table style="width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden;
+        border:1px solid ${BASE.border};box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+        <tbody>
+          ${row("Account Email", recipientEmail, true)}
+          ${row("Link Expires In", "15 minutes")}
+          ${row("Request Type", "Password Reset", true)}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CTA button -->
+    <div style="text-align:center;margin-bottom:28px;">
+      <a href="${resetLink}"
+        style="display:inline-block;background:${BASE.brand};
+        color:${BASE.white};text-decoration:none;font-size:15px;
+        font-weight:700;padding:14px 36px;border-radius:10px;
+        letter-spacing:0.04em;">
+        Reset My Password
+      </a>
+
+      <p style="margin:14px 0 4px;font-size:12px;color:${BASE.gray};">
+        Button not working? Copy and paste this link into your browser:
+      </p>
+
+      <p style="margin:0;font-size:11px;color:${BASE.brand};word-break:break-all;">
+        ${resetLink}
+      </p>
+    </div>`;
+
+  return wrapperNoFooter(
+    "Reset your Karisimbi Real Estate password — link expires in 15 minutes",
+    content
+  );
+}
+
+export function resetPasswordEmailText(resetLink: string): string {
+  return `
+RESET YOUR PASSWORD — Karisimbi Real Estate
+============================================
+
+We received a request to reset your password.
+
+Click the link below (expires in 15 minutes):
+${resetLink}
   `.trim();
 }
