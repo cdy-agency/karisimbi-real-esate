@@ -48,7 +48,7 @@ function StatItem({
   const count = useCountUp(value, 1800, started);
 
   return (
-    <div className="flex flex-1 items-center gap-4 px-10 py-8">
+    <div className="flex flex-1 items-center gap-4 px-6 py-6 sm:px-10 sm:py-8">
       {/* Icon */}
       <Icon size={52} strokeWidth={1.4} className="text-gray-800 shrink-0" />
 
@@ -85,7 +85,7 @@ export function StatsSection() {
   }, []);
 
   return (
-    <section className="bg-white py-14">
+    <section className="bg-white py-10 sm:py-14">
       <AnimatedSection className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-12">
         {/* Section header */}
         <div className="mb-8">

@@ -83,7 +83,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
 }
 
 // ─── MAIN ─────────────────────────────────────────────
-export function PropertiesSection() {
+export function   PropertiesSection() {
   const [active, setActive] = useState("All");
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
