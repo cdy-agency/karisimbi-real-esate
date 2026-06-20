@@ -7,13 +7,18 @@ import { MapPin, Bed, Bath, Square, ArrowUpRight } from "lucide-react";
 import { AnimatedSection } from "../animations/AnimatedSection";
 import { getPrimaryPropertyImage } from "@/src/lib/property-images";
 
+// ⬇️ Matched exactly to PROPERTY_TYPES in AddProperty.tsx so filtering works correctly
 const categories = [
   "All",
-  "Houses",
-  "Plots",
   "Villa",
   "Family House",
   "Penthouse",
+  "Apartment",
+  "Mansion",
+  "Townhouse",
+  "Studio",
+  "Commercial",
+  "Plot of Land",
 ];
 
 type Property = {
