@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { AnimatedSection } from "../animations/AnimatedSection";
 import { getPrimaryPropertyImage } from "@/src/lib/property-images";
+import { usePropertyCache } from "@/src/hooks/use-property-cache";
+import { LatestProjectCardSkeleton } from "../skeletons/PropertySkeletons";
 
 type Property = {
   id: string;
@@ -22,34 +24,24 @@ type Property = {
   created_at: string;
 };
 
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
-function SkeletonCard() {
-  return (
-    <div className="h-75 lg:h-85 w-full animate-pulse rounded-2xl bg-gray-200" />
-  );
-}
-
 // ─── Main component ───────────────────────────────────────────────────────────
 export function LatestProjects() {
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    async function fetchLatest() {
-      try {
-        const res = await fetch("/api/user/properties/get?limit=3");
-        if (!res.ok) throw new Error("Failed to fetch");
-        const data = await res.json();
-        setProperties(data.properties ?? []);
-      } catch {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchLatest();
+  // Fetch function - will be memoized by usePropertyCache
+  const fetchLatestProperties = useCallback(async () => {
+    const res = await fetch("/api/user/properties/get?limit=3");
+    if (!res.ok) throw new Error("Failed to fetch properties");
+    const data = await res.json();
+    return data.properties ?? [];
   }, []);
+
+  // Use cache hook with 5-minute TTL
+  const { data: properties, loading, error, refetch } = usePropertyCache(
+    fetchLatestProperties,
+    {
+      key: "property_latest",
+      ttl: 5 * 60 * 1000, // 5 minutes cache
+    }
+  );
 
   return (
     <section className="bg-[#f7f7f8] py-16 px-8 lg:px-12">
@@ -59,7 +51,7 @@ export function LatestProjects() {
         <div className="mb-10 flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
           <div className="mb-8">
             <h3 className="font-heading font-black uppercase tracking-wide text-primary">
-              Our Properties
+              Latest Properties
             </h3>
             <p className="mt-1 text-gray-500">Our Latest Properties</p>
           </div>
@@ -79,17 +71,23 @@ export function LatestProjects() {
 
           {/* Loading skeletons */}
           {loading && Array.from({ length: 3 }).map((_, i) => (
-            <SkeletonCard key={i} />
+            <LatestProjectCardSkeleton key={i} />
           ))}
 
-          {/* Error */}
+          {/* Error state */}
           {!loading && error && (
-            <div className="col-span-full py-16 text-center text-sm text-gray-400">
-              Failed to load properties.
+            <div className="col-span-full py-16 text-center">
+              <p className="text-sm text-gray-400 mb-4">Failed to load properties.</p>
+              <button
+                onClick={refetch}
+                className="rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/5 transition-colors"
+              >
+                Try again
+              </button>
             </div>
           )}
 
-          {/* Empty */}
+          {/* Empty state */}
           {!loading && !error && properties.length === 0 && (
             <div className="col-span-full py-16 text-center text-sm text-gray-400">
               No properties added yet.
@@ -116,6 +114,7 @@ export function LatestProjects() {
                   alt={property.title}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
               ) : (
                 <div className="h-full w-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
@@ -141,7 +140,7 @@ export function LatestProjects() {
                 <p className="m-0 mb-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">
                   {property.location}
                 </p>
-                <h4 className="m-0 font-heading text-[20px] font-bold text-white leading-tight">
+                <h4 className="m-0 font-heading text-[20px] font-bold text-white leading-tight line-clamp-2">
                   {property.title}
                 </h4>
                 <p className="m-0 mt-2 text-[13px] font-semibold text-white/80">

@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Bed, Bath, Square, ArrowUpRight } from "lucide-react";
+import { MapPin, ArrowUpRight } from "lucide-react";
 import { AnimatedSection } from "../animations/AnimatedSection";
 import { getPrimaryPropertyImage } from "@/src/lib/property-images";
+import { usePropertyCache } from "@/src/hooks/use-property-cache";
+import { PropertyCardSkeleton } from "../skeletons/PropertySkeletons";
 
 const categories = [
   "All",
@@ -30,26 +32,6 @@ type Property = {
   image_url: string | null;
   created_at: string;
 };
-
-// ─── Skeleton ─────────────────────────────────────
-function SkeletonCard() {
-  return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-      <div className="h-56 w-full animate-pulse bg-gray-100" />
-      <div className="flex flex-col gap-3 p-5">
-        <div className="h-4 w-3/4 animate-pulse rounded-lg bg-gray-100" />
-        <div className="h-3 w-1/2 animate-pulse rounded-lg bg-gray-100" />
-        <div className="mt-2 flex gap-4">
-          <div className="h-3 w-12 animate-pulse rounded-lg bg-gray-100" />
-          <div className="h-3 w-12 animate-pulse rounded-lg bg-gray-100" />
-          <div className="h-3 w-16 animate-pulse rounded-lg bg-gray-100" />
-        </div>
-        <div className="mt-4 h-px w-full bg-gray-100" />
-        <div className="h-5 w-1/3 animate-pulse rounded-lg bg-gray-100" />
-      </div>
-    </div>
-  );
-}
 
 // ─── Empty state ─────────────────────────────────────
 function EmptyState({ type }: { type: string }) {
@@ -83,51 +65,48 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
 }
 
 // ─── MAIN ─────────────────────────────────────────────
-export function   PropertiesSection() {
+export function PropertiesSection() {
   const [active, setActive] = useState("All");
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
 
-  async function fetchProperties(type: string) {
-    setLoading(true);
-    setError(false);
+  // Fetch function with proper cache key strategy
+  const fetchProperties = useCallback(async () => {
+    const params = active !== "All" ? `?type=${encodeURIComponent(active)}` : "";
+    const res = await fetch(`/api/user/properties/get${params}`);
 
-    try {
-      const params = type !== "All" ? `?type=${encodeURIComponent(type)}` : "";
-      const res = await fetch(`/api/user/properties/get${params}`);
+    if (!res.ok) throw new Error("Failed to fetch properties");
 
-      if (!res.ok) throw new Error("Failed");
-
-      const data = await res.json();
-      setProperties(data.properties ?? []);
-    } catch {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    fetchProperties(active);
+    const data = await res.json();
+    return data.properties ?? [];
   }, [active]);
 
+  // Use cache hook with category-specific cache key
+  const { data: properties, loading, error, refetch } = usePropertyCache(
+    fetchProperties,
+    {
+      key: `property_${active}`,
+      ttl: 5 * 60 * 1000, // 5 minutes cache
+    }
+  );
+
+  const handleCategoryChange = (category: string) => {
+    setActive(category);
+  };
+
   return (
-    <section className="bg-white pt-4 pb-12 px-6 lg:px-12 properties-test">
+    <section className="bg-white pt-4 pb-12 px-6 lg:px-12 properties-test py-8 sm:py-12">
       <AnimatedSection className="mx-auto max-w-300">
 
         {/* HEADER */}
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h3 className="text-primary font-semibold uppercase tracking-wide text-sm">
-              Our Properties
+              Projects
             </h3>
             <p className="mt-1 text-gray-500 text-sm">
-              Discover Your Ideal Property
+              Building Dreams, Shaping Communities
             </p>
           </div>
 
-          {/* RED LINK ADDED (same style as your app, not big text) */}
           <Link
             href="/properties"
             className="text-red-500 text-sm font-medium border-b border-red-300 hover:border-red-500"
@@ -141,13 +120,13 @@ export function   PropertiesSection() {
           {categories.map((cat) => (
             <button
               key={cat}
-              onClick={() => setActive(cat)}
+              onClick={() => handleCategoryChange(cat)}
               disabled={loading}
               className={[
-                "rounded-full px-5 h-9 text-[13px] font-medium border",
+                "rounded-full px-5 h-9 text-[13px] font-medium border transition-all duration-200",
                 active === cat
                   ? "bg-primary text-white border-primary"
-                  : "bg-white text-gray-600 border-gray-200",
+                  : "bg-white text-gray-600 border-gray-200 hover:border-primary/30",
                 loading ? "opacity-60 pointer-events-none" : "",
               ].join(" ")}
             >
@@ -161,11 +140,11 @@ export function   PropertiesSection() {
 
           {loading &&
             Array.from({ length: 6 }).map((_, i) => (
-              <SkeletonCard key={i} />
+              <PropertyCardSkeleton key={i} />
             ))}
 
           {!loading && error && (
-            <ErrorState onRetry={() => fetchProperties(active)} />
+            <ErrorState onRetry={refetch} />
           )}
 
           {!loading && !error && properties.length === 0 && (
@@ -181,7 +160,7 @@ export function   PropertiesSection() {
                 <Link
                   key={property.id}
                   href={`/properties/${property.id}`}
-                  className="group flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white"
+                  className="group flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                 >
                   <div className="relative h-56 w-full bg-gray-50">
                     {coverImage ? (
@@ -189,7 +168,7 @@ export function   PropertiesSection() {
                         src={coverImage}
                         alt={property.title}
                         fill
-                        className="object-cover"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : null}
 

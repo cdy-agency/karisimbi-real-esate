@@ -219,3 +219,19 @@ body {
   border: 3px solid transparent;
   background-clip: padding-box;
 }
+
+/* ──────────────────────────────────────── */
+/* Shimmer animation for skeleton loaders  */
+/* ──────────────────────────────────────── */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
