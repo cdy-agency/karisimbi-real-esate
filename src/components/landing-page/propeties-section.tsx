@@ -9,13 +9,18 @@ import { getPrimaryPropertyImage } from "@/src/lib/property-images";
 import { usePropertyCache } from "@/src/hooks/use-property-cache";
 import { PropertyCardSkeleton } from "../skeletons/PropertySkeletons";
 
+// ⬇️ Matched exactly to PROPERTY_TYPES in AddProperty.tsx so filtering works correctly
 const categories = [
   "All",
-  "Houses",
-  "Plots",
   "Villa",
   "Family House",
   "Penthouse",
+  "Apartment",
+  "Mansion",
+  "Townhouse",
+  "Studio",
+  "Commercial",
+  "Plot of Land",
 ];
 
 type Property = {
