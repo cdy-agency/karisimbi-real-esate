@@ -27,21 +27,22 @@ type Property = {
 // ─── Main component ───────────────────────────────────────────────────────────
 export function LatestProjects() {
   // Fetch function - will be memoized by usePropertyCache
-  const fetchLatestProperties = useCallback(async () => {
+  const fetchLatestProperties = useCallback(async (): Promise<Property[]> => {
     const res = await fetch("/api/user/properties/get?limit=3");
     if (!res.ok) throw new Error("Failed to fetch properties");
-    const data = await res.json();
+    const data: { properties?: Property[] } = await res.json();
     return data.properties ?? [];
   }, []);
 
   // Use cache hook with 5-minute TTL
-  const { data: properties, loading, error, refetch } = usePropertyCache(
+  const { data: cachedProperties, loading, error, refetch } = usePropertyCache(
     fetchLatestProperties,
     {
       key: "property_latest",
       ttl: 5 * 60 * 1000, // 5 minutes cache
     }
   );
+  const properties = cachedProperties ?? [];
 
   return (
     <section className="bg-[#f7f7f8] py-16 px-8 lg:px-12">

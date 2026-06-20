@@ -69,24 +69,25 @@ export function PropertiesSection() {
   const [active, setActive] = useState("All");
 
   // Fetch function with proper cache key strategy
-  const fetchProperties = useCallback(async () => {
+  const fetchProperties = useCallback(async (): Promise<Property[]> => {
     const params = active !== "All" ? `?type=${encodeURIComponent(active)}` : "";
     const res = await fetch(`/api/user/properties/get${params}`);
 
     if (!res.ok) throw new Error("Failed to fetch properties");
 
-    const data = await res.json();
+    const data: { properties?: Property[] } = await res.json();
     return data.properties ?? [];
   }, [active]);
 
   // Use cache hook with category-specific cache key
-  const { data: properties, loading, error, refetch } = usePropertyCache(
+  const { data: cachedProperties, loading, error, refetch } = usePropertyCache(
     fetchProperties,
     {
       key: `property_${active}`,
       ttl: 5 * 60 * 1000, // 5 minutes cache
     }
   );
+  const properties = cachedProperties ?? [];
 
   const handleCategoryChange = (category: string) => {
     setActive(category);
