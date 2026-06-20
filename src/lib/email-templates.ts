@@ -530,10 +530,6 @@ Karisimbi Real Estate · info@karisimbirealestate.com · +250 787 861 400
   `.trim();
 }
 
-/* ─────────────────────────────────────────────
-   RESET PASSWORD EMAIL
-   ───────────────────────────────────────────── */
-
 export function resetPasswordEmailHtml(
   resetLink: string,
   recipientEmail: string

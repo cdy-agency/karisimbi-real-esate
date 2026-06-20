@@ -35,7 +35,7 @@ type Property = {
 function SkeletonCard() {
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-      <div className="h-55 w-full animate-pulse bg-gray-100" />
+      <div className="h-56 w-full animate-pulse bg-gray-100" />
       <div className="flex flex-col gap-3 p-5">
         <div className="h-4 w-3/4 animate-pulse rounded-lg bg-gray-100" />
         <div className="h-3 w-1/2 animate-pulse rounded-lg bg-gray-100" />
@@ -113,7 +113,7 @@ export function PropertiesSection() {
   }, [active]);
 
   return (
-    <section className="bg-white py-16 px-8 lg:px-12">
+    <section className="bg-white pt-6 pb-16 px-8 lg:px-12">
       <AnimatedSection className="mx-auto max-w-300">
 
         {/* HEADER */}
@@ -183,7 +183,7 @@ export function PropertiesSection() {
                   href={`/properties/${property.id}`}
                   className="group flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white"
                 >
-                  <div className="relative h-55 w-full bg-gray-50">
+                  <div className="relative h-56 w-full bg-gray-50">
                     {coverImage ? (
                       <Image
                         src={coverImage}
