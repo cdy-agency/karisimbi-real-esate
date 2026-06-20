@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <div>
       <Hero />
-      <StatsSection />
+      {/* <StatsSection /> */}
       <PropertiesSection />
       <LatestProjects />
       <ContactCta />
