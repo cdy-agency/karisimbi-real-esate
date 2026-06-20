@@ -113,7 +113,7 @@ export function   PropertiesSection() {
   }, [active]);
 
   return (
-    <section className="bg-white pt-4 pb-12 px-6 lg:px-12">
+    <section className="bg-white pt-4 pb-12 px-6 lg:px-12 properties-test">
       <AnimatedSection className="mx-auto max-w-300">
 
         {/* HEADER */}

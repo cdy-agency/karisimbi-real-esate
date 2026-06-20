@@ -85,7 +85,7 @@ export function StatsSection() {
   }, []);
 
   return (
-    <section className="bg-white py-8 sm:py-12">
+    <section className="bg-white py-8 sm:py-12 stats-test">
       <AnimatedSection className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-12">
         {/* Section header */}
         <div className="mb-6">
