@@ -113,11 +113,11 @@ export function   PropertiesSection() {
   }, [active]);
 
   return (
-    <section className="bg-white pt-6 pb-16 px-8 lg:px-12">
+    <section className="bg-white pt-4 pb-12 px-6 lg:px-12">
       <AnimatedSection className="mx-auto max-w-300">
 
         {/* HEADER */}
-        <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h3 className="text-primary font-semibold uppercase tracking-wide text-sm">
               Our Properties

@@ -48,17 +48,17 @@ function StatItem({
   const count = useCountUp(value, 1800, started);
 
   return (
-    <div className="flex flex-1 items-center gap-4 px-6 py-6 sm:px-10 sm:py-8">
+    <div className="flex flex-1 items-center gap-3 px-4 py-5 sm:px-10 sm:py-8">
       {/* Icon */}
-      <Icon size={52} strokeWidth={1.4} className="text-gray-800 shrink-0" />
+      <Icon size={44} strokeWidth={1.4} className="text-gray-800 shrink-0" />
 
       {/* Number + label */}
       <div>
-        <p className="font-heading m-0 text-[42px] font-black leading-none text-gray-900">
+        <p className="font-heading m-0 text-[38px] font-black leading-none text-gray-900">
           {count.toLocaleString()}
           <span className="text-primary">{suffix}</span>
         </p>
-        <p className="mt-1 text-[15px] font-bold text-primary">{label}</p>
+        <p className="mt-1 text-[14px] font-bold text-primary">{label}</p>
       </div>
     </div>
   );
@@ -85,11 +85,11 @@ export function StatsSection() {
   }, []);
 
   return (
-    <section className="bg-white py-10 sm:py-14">
+    <section className="bg-white py-8 sm:py-12">
       <AnimatedSection className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-12">
         {/* Section header */}
-        <div className="mb-8">
-          <h3 className="font-heading  font-black uppercase tracking-wide text-primary">
+        <div className="mb-6">
+          <h3 className="font-heading font-black uppercase tracking-wide text-primary">
             Achievements
           </h3>
           <p className="mt-1 text-gray-500">
@@ -100,7 +100,7 @@ export function StatsSection() {
         {/* Stats strip */}
         <div
           ref={ref}
-          className="flex flex-col sm:flex-row overflow-hidden rounded-xl bg-primary/6
+          className="grid grid-cols-1 gap-4 sm:grid-cols-3 overflow-hidden rounded-xl bg-primary/6
                      divide-y sm:divide-y-0 sm:divide-x divide-primary/10"
         >
           {stats.map((stat) => (
