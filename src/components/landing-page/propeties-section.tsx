@@ -23,6 +23,9 @@ const categories = [
   "Plot of Land",
 ];
 
+// How many cards to show = 2 rows on desktop (3 columns)
+const DISPLAY_LIMIT = 6;
+
 type Property = {
   id: string;
   title: string;
@@ -75,13 +78,27 @@ export function PropertiesSection() {
 
   // Fetch function with proper cache key strategy
   const fetchProperties = useCallback(async (): Promise<Property[]> => {
-    const params = active !== "All" ? `?type=${encodeURIComponent(active)}` : "";
-    const res = await fetch(`/api/user/properties/get${params}`);
+    const params = new URLSearchParams();
+    if (active !== "All") params.set("type", active);
+    // Ask the API for latest-first, limited results (if it supports these params)
+    params.set("sort", "latest");
+    params.set("limit", String(DISPLAY_LIMIT));
+
+    const res = await fetch(`/api/user/properties/get?${params.toString()}`);
 
     if (!res.ok) throw new Error("Failed to fetch properties");
 
     const data: { properties?: Property[] } = await res.json();
-    return data.properties ?? [];
+    const list = data.properties ?? [];
+
+    // Client-side safety net: always sort by newest first and cap to DISPLAY_LIMIT,
+    // in case the API doesn't support sort/limit params yet.
+    return [...list]
+      .sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
+      .slice(0, DISPLAY_LIMIT);
   }, [active]);
 
   // Use cache hook with category-specific cache key
@@ -145,7 +162,7 @@ export function PropertiesSection() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
           {loading &&
-            Array.from({ length: 6 }).map((_, i) => (
+            Array.from({ length: DISPLAY_LIMIT }).map((_, i) => (
               <PropertyCardSkeleton key={i} />
             ))}
 
